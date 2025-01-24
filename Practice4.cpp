@@ -7,33 +7,35 @@
 #include <map>
 #include <windows.h>
 #include <wingdi.h>
-#include <cstdlib>  
+#include <cstdlib>
 #define _USE_MATH_DEFINES
 using namespace std;
 
-int check_number(string line){
+int check_number(string line)
+{
     string number;
-    for (int i=0; i < line.size(); i++)
+    for (int i = 0; i < line.size(); i++)
+    {
+        if (isdigit(line[i]) == 1 | (line[i] == '.' && (i + 1) < line.size() && isdigit(line[i + 1]) == 1))
         {
-            if (isdigit(line[i]) == 1 | (line[i] == '.' && (i + 1) < line.size() && isdigit(line[i + 1]) == 1))
-            {
-                number += line[i];
-            }
-            else if (number == "" and line[i] == '-')
-            {
-                number += '-';
-            }
-            else
-            {
-                return 0;
-            }
+            number += line[i];
         }
+        else if (number == "" and line[i] == '-')
+        {
+            number += '-';
+        }
+        else
+        {
+            return 0;
+        }
+    }
     return 1;
 }
 
-void first(){
-    string line, number="";
-    double summa=0;
+void first()
+{
+    string line, number = "";
+    double summa = 0;
     ofstream text("summa.txt");
     cout << "Вводите числа: " << endl;
     getline(cin, line);
@@ -44,7 +46,7 @@ void first(){
     else
     {
         text << line << endl;
-        for (int i=0; i<9; i++)
+        for (int i = 0; i < 9; i++)
         {
             cin >> line;
             if (check_number(line) == 1)
@@ -64,7 +66,7 @@ void first(){
     {
         if (line.find(" ") != string::npos)
         {
-            for (int j=0; j < line.size(); j++)
+            for (int j = 0; j < line.size(); j++)
             {
                 if (line[j] == ' ')
                 {
@@ -94,8 +96,8 @@ void first(){
     cout << summa << endl;
 }
 
-
-int sign(double a){
+int sign(double a)
+{
     if (a > 0)
     {
         return 1;
@@ -110,23 +112,24 @@ int sign(double a){
     }
 }
 
-void second(){
+void second()
+{
     double a;
     cout << "Введите число: ";
     cin >> a;
     switch (sign(a))
     {
-        case 1:
-            cout << "Число положительное";
-            break;
-        case 0:
-            cout << "Число равно 0";
-            break;
-        case -1:
-            cout << "Число положительное";
-            break;
-        default:
-            break;
+    case 1:
+        cout << "Число положительное";
+        break;
+    case 0:
+        cout << "Число равно 0";
+        break;
+    case -1:
+        cout << "Число положительное";
+        break;
+    default:
+        break;
     };
 }
 
@@ -160,17 +163,17 @@ double triangle_3(double a, double b, double c)
 {
     double p;
     if (check_triangle(b, c, a) > 0)
-        {
-            p = (b + c + a) / 2.;
-            return sqrt(p * (p - a) * (p - b) * (p - c));
-        }
+    {
+        p = (b + c + a) / 2.;
+        return sqrt(p * (p - a) * (p - b) * (p - c));
+    }
     return 0.0;
 }
 
-
-void third(){
+void third()
+{
     int input;
-    double R, l, k; 
+    double R, l, k;
     cout << "Для вычисления площади геом фигур введите цифры: " << endl;
     cout << "1 - для вычиления S треугольника" << endl;
     cout << "2 - для вычиления S прямоугольника" << endl;
@@ -198,7 +201,7 @@ void third(){
         cin >> k;
         if (rectangle(l, k) > 0)
             cout << rectangle(l, k) << endl;
-        else 
+        else
             cout << "Стороны должны быть положительными" << endl;
         break;
     case 3:
@@ -215,14 +218,15 @@ void third(){
     }
 }
 
-void forth(){
+void forth()
+{
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     bool check = true;
-    for (int i=0; i<13; i++)
+    for (int i = 0; i < 13; i++)
     {
         if (i < 4)
         {
-            for (int j=0; j<12; j++)
+            for (int j = 0; j < 12; j++)
             {
                 SetConsoleTextAttribute(h, 0x115);
                 cout << "*";
@@ -230,7 +234,7 @@ void forth(){
             if (check)
             {
                 check = false;
-                for (int k=0; k<25; k++)
+                for (int k = 0; k < 25; k++)
                 {
                     SetConsoleTextAttribute(h, 0x40);
                     cout << " ";
@@ -241,7 +245,7 @@ void forth(){
             else
             {
                 check = true;
-                for (int k=0; k<25; k++)
+                for (int k = 0; k < 25; k++)
                 {
                     SetConsoleTextAttribute(h, 0x70);
                     cout << " ";
@@ -255,7 +259,7 @@ void forth(){
             if (check)
             {
                 check = false;
-                for (int k=0; k<37; k++)
+                for (int k = 0; k < 37; k++)
                 {
                     SetConsoleTextAttribute(h, 0x40);
                     cout << " ";
@@ -266,7 +270,7 @@ void forth(){
             else
             {
                 check = true;
-                for (int k=0; k<37; k++)
+                for (int k = 0; k < 37; k++)
                 {
                     SetConsoleTextAttribute(h, 0x70);
                     cout << " ";
@@ -278,202 +282,85 @@ void forth(){
     }
 }
 
-void fifth(){
-    
+bool is_roman(string s)
+{
+    string l = "IVXLCDM";
+    int a[7] = {0}; // подсчет различных символов в строке
+    string s1 = "";
+    // проверка на существование символа римского числа
+    for (char h : s)
+    {
+        if (l.find(h) == string::npos)
+            return false;
+        s1 += l.find(h);
+    }
+    for (int i = 0; i < s1.size(); i++)
+    {
+        int u = s1[i];
+        a[u] += 1;
+        // проверка на наличие максимум 3 символов
+        if (u < 6 and a[u] >= 4)
+            return false;
+        if (u % 2 == 1 and a[u] >= 2)
+            return false;
+        if (i > 0 and i + 1 < s1.size())
+        {
+            if (s1[i - 1] == s1[i + 1] and s[i - 1] < s[i])
+                return false;
+        }
+    }
+
+    return true;
 }
 
-
-int check_number_2(string line)
+void sixth()
 {
-    map <char, int> slovar = {};
-    map <char, int> symbols = {{'I', 1}, {'V', 5}, {'X', 10}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}};
-    char list[line.size()];
-    int count_last = 0;
-    char last;
-    for (int i=0; i<line.size(); i++)
+    cout << "Вводите число в римской системе: ";
+    string s;
+    cin >> s;
+    for (int i = 0; i < s.size(); i++)
     {
-        if (symbols.count(line[i]) == 0)
+        if (s[i] > 'Z')
+            s[i] = s[i] - 'a' + 'A';
+    }
+    if (!is_roman(s))
+    {
+        cout << "Неправильно";
+        return;
+    }
+    int result = 0;
+    string l = "IVXLCDM";
+    short just = 0;
+    for (int i = s.size() - 1; i >= 0; i--)
+    {
+        short u = l.find(s[i]);
+        if (u >= just)
         {
-            cout << "Вы ввели неправильное число" << endl;
-            return 0;
-        }
-        if (line[i] == last)
-        {
-            count_last += 1;
-            if (count_last > 3)
-            {
-                cout << "Вы ввели неправильное число" << endl;
-                return 0;
-            }
+            result += pow(10, u / 2) * (1 + 4 * (u % 2));
+            just = u;
         }
         else
-        {
-            if (i == 0)
-            {
-                last = line[i];
-                count_last += 1;
-            }
-            else
-            {
-                last = line[i];
-                count_last = 1;
-            } 
-        }
+            result -= pow(10, u / 2) * (1 + 4 * (u % 2));
     }
-    for (int i=0; i<line.size(); i++)
-    {
-        if (i > 0 && symbols[line[i - 1]] < symbols[line[i]])
-        {
-            if (i > 0 && (line.substr(i - 1, 2) == "IX" | line.substr(i - 1, 2) == "IV" | line.substr(i - 1, 2) == "XL" | line.substr(i - 1, 2) == "XC" | line.substr(i - 1, 2) == "CD" | line.substr(i - 1, 2) == "CM"))
-            {
-                continue;
-            }
-            else
-            {
-                cout << "Вы ввели неправильное число" << endl;
-                return 0;
-            }
-        }
-        else if (i > 0 && symbols[line[i - 1]] >= symbols[line[i]])
-        {
-            continue;
-        }
-    }
-    return 1;
-}
-
-void sixth(){
-    map <char, int> slovar = {{'I', 1}, {'X', 10}, {'V', 5}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}};
-    string line;
-    bool check=true;
-    int number=0, count_I=0;
-    cout << "Вводите число в римской записи: ";
-    cin >> line;
-    if (check_number_2(line))
-    {
-        for (int i=0; i < line.size(); i++)
-        {
-            if (i > 0 && slovar[line[i - 1]] >= slovar[line[i]])
-            {
-                number += slovar[line[i]];
-                if (line[i] == 'I')
-                {
-                    count_I += 1;
-                }
-                else
-                {
-                    count_I = 0;
-                }
-            }
-            else if (i == 0)
-            {
-                number += slovar[line[i]];
-                if (line[i] == 'I')
-                {
-                    count_I += 1;
-                }
-                else
-                {
-                    count_I = 0;
-                }
-            }
-            else if (line.substr(i - 1, 2) == "IX")
-            {
-                number += 8;
-                count_I = 0;
-            }
-            else if (line.substr(i - 1, 2) == "IV")
-            {
-                number += 3;
-                count_I = 0;
-            }
-            else if (line.substr(i - 1, 2) == "XL")
-            {
-                number += 30;
-                count_I = 0;
-            }
-            else if (line.substr(i - 1, 2) == "XC")
-            {
-                number += 80;
-                count_I = 0;
-            }
-            else if (line.substr(i - 1, 2) == "CD")
-            {
-                number += 300;
-                count_I = 0;
-            }
-            else if (line.substr(i - 1, 2) == "CM")
-            {
-                number += 800;
-                count_I = 0;
-            }
-            else
-            {
-                cout << "Вы ввели неправильное число" << endl;
-                check = false;
-                break;
-            }
-        }
-        if (check)
-        {
-            cout << number << endl;
-        }
-    }
-}
-
-void seventh(){
-    int option, count;
-    cout << "Выберете вариант генерации случайного числа" << endl;
-    cout << "Для этого введите 1 или 2" << endl;
-    cin >> option;
-    cout << "Введите кол-во рандомных чисел, которые вы хотите получить" << endl;
-    cin >> count;
-    switch (option)
-    {
-        case 1:
-            {
-            int m=37, i=3, c=64, s=0;
-            for (int k=0; k<count; k++)
-            {
-                cout << k + 1 << ": " << (m * s + i) % c << endl;
-                s = (m * s + i) % c;
-            }
-            break;
-            }
-
-        case 2:
-            {
-            int m1=25173, i1=13849, c1=65537, s1=0;
-            for (int k1=0; k1<count; k1++)
-            {
-                cout << k1 + 1 << ": " << (m1 * s1 + i1) % c1 << endl;
-                s1 = (m1 * s1 + i1) % c1;
-            }
-            break;
-            }
-
-        default:
-            cout << "Нет такого варианта генерации случайного числа";
-            break;
-    }
+    cout << result << endl;
 }
 
 void eighth()
 {
-    double sum=0;
+    double sum = 0;
     int counts[3][4] = {{5, 2, 0, 10}, {3, 5, 2, 5}, {20, 0, 0, 0}};
-    double answer [3][2] = {};
-    double answer_1_max=0, answer_1_min = 100000, answer_2_max=0, answer_2_min=1000, answer_3=0, answer_4=0, answer_5=0;
+    double answer[3][2] = {};
+    double answer_1_max = 0, answer_1_min = 100000, answer_2_max = 0, answer_2_min = 1000, answer_3 = 0, answer_4 = 0, answer_5 = 0;
     double commission[4][2] = {{1.2, 0.5}, {2.8, 0.4}, {5, 1}, {2, 1.5}};
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-        for (int j=0; j<2; j++)
+        for (int j = 0; j < 2; j++)
         {
             sum = counts[i][0] * commission[0][j] + counts[i][1] * commission[1][j] + counts[i][2] * commission[2][j] + counts[i][3] * commission[3][j];
             answer[i][j] = sum;
         }
     }
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
         if (answer[i][0] > answer_1_max)
         {
@@ -502,14 +389,15 @@ void eighth()
     cout << "Ответ на 5 вопрос: " << answer_5 << endl;
 }
 
-int main(){
-    //while (true)
-    //first(); // сделал сдать / сдал
-    //second(); // сделал сдать / сдал
-    //third(); // сделал сдать / сдал
-    //forth(); // сдать  сдать / сдал
-    //fifth();
-    sixth(); // сделал сдать / 
-    //seventh(); // сделал сдать / сдал
-    //eighth(); // сделал сдать / сдал
+int main()
+{
+    while (true)
+        // first(); // сделал сдать / сдал
+        // second(); // сделал сдать / сдал
+        // third(); // сделал сдать / сдал
+        // forth(); // сдать  сдать / сдал
+        // fifth();
+        sixth(); // сделал сдать /
+    // seventh(); // сделал сдать / сдал
+    // eighth(); // сделал сдать / сдал
 }

@@ -1,6 +1,44 @@
 {
+    "editor.folding": true,
+    "editor.minimap.enabled": false,
+    "editor.smoothScrolling": true,
+    "editor.bracketPairColorization.enabled": false,
+    "editor.suggestSelection": "first",
+    "editor.scrollbar.horizontal": "hidden",
+    "editor.scrollbar.vertical": "hidden",
+
+    "editor.cursorBlinking": "expand",
+    "editor.cursorStyle": "line-thin",
+    "editor.cursorSmoothCaretAnimation": "explicit",
+    "editor.fontFamily": "JetBrains Mono",
+
+    "editor.formatOnSave": true,
+    "editor.linkedEditing": true,
+
+    "editor.renderControlCharacters": false,
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+
+    "editor.quickSuggestionsDelay": 0,
+    
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": false,
+    "editor.glyphMargin": false,
+    "window.density.editorTabHeight": "compact",
+    "workbench.layoutControl.enabled": false,
+    "workbench.editor.editorActionsLocation": "hidden",
+    "workbench.editor.empty.hint": "hidden",
+
+    "window.commandCenter": false,
+
+    "terminal.integrated.cursorStyle": "underline",
+
+    "workbench.tree.indent": 18,
+    "workbench.list.smoothScrolling": true,
+    
+
+    "prettier.tabWidth": 4,
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "iosfwd": "cpp"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    
 }
