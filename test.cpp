@@ -5,4 +5,5 @@ int main()
 {
     cout << "Привет" << endl;
     cout << "new" << endl;
+    cout << "old" << endl;
 }
