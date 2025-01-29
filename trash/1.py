@@ -1,5 +1,4 @@
-import pandas as pd
-import numpy as np
-reviews = pd.read_csv("../input/wine-reviews/winemag-data-130k-v2.csv", index_col=0)
-pd.set_option("display.max_rows", 5)
-reviews.head()
+star_3 = reviews.loc[reviews.points >= 95 | reviews.country == "Canada"]
+star_2 = reviews.loc[85 <= reviews.points < 95]
+star_1 = reviews.loc[85 > rewiews.points]
+star_ratings = pd.Series({"1"})
