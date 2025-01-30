@@ -39,7 +39,7 @@ OH_X_train = pd.concat([imputed_X_train, OH_X_train.drop(columns=OH_X_train.sele
 OH_X_valid = pd.concat([imputed_X_valid, OH_X_valid.drop(columns=OH_X_valid.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 
 # Тренировка модели
-house_model = XGBRegressor(n_estimators=1000, n_jobs=4, learning_rate=0.05)
+house_model = XGBRegressor(n_estimators=1300, n_jobs=5, learning_rate=0.1)
 house_model.fit(OH_X_train, y_train, verbose=False)
 
 # Предсказание
