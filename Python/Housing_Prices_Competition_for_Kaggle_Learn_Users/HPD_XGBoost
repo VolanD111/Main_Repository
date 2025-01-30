@@ -1,69 +1,50 @@
 import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 from xgboost import XGBRegressor
 
-def delete(df):
-    delete_columns = []
-    for index in df.columns.tolist():
-        check_str = False
-        check_nan = False
-        for value in df[index].tolist():
-            if isinstance(value, str):  # Проверка на строку
-                check_str = True
-            elif pd.isna(value):  # Проверка на NaN
-                check_nan = True
-        # Если есть строки и NaN, добавляем столбец в список для удаления
-        if check_str and check_nan:
-            delete_columns.append(index)
-    return delete_columns
-
-# прочитали файлы
+# Чтение файлов
 houses_data_train = pd.read_csv("C:\\vscode\Python\Housing_Prices_Competition_for_Kaggle_Learn_Users\\train.csv")
 houses_data_valid = pd.read_csv("C:\\vscode\Python\Housing_Prices_Competition_for_Kaggle_Learn_Users\\test.csv")
 
-# выбрали что ищем и что идет в дерево
+# Определение целевой переменной и признаков
 y_train = houses_data_train.SalePrice
-X_train = houses_data_train[houses_data_train.columns]
-X_valid = houses_data_valid[houses_data_valid.columns]
+X_train = houses_data_train.drop(columns='SalePrice')
+X_valid = houses_data_valid.copy()
 
-# удаление колонок со строчками и которых есть Nan
-delete_columns = delete(X_valid)
-X_valid = X_valid.drop(columns=delete_columns)
-X_train = X_train[X_valid.columns]
+# Определение категориальных признаков
+object_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
 
-# колонки в которых есть Nan
-cols_with_missing = [col for col in X_train.columns
-                     if X_train[col].isnull().any()]
+# Применение One-Hot Encoding
+ordinal_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+label_X_train = pd.DataFrame(ordinal_encoder.fit_transform(X_train[object_cols]), columns=ordinal_encoder.get_feature_names_out(object_cols))
+label_X_valid = pd.DataFrame(ordinal_encoder.transform(X_valid[object_cols]), columns=ordinal_encoder.get_feature_names_out(object_cols))
 
-# отбор колонок в которых лежат строчки
-s = (X_train.dtypes == "object")
-object_cols = list(s[s].index)
+# Удаление категориальных колонок из оригинальных данных
+num_X_train = X_train.drop(columns=object_cols)
+num_X_valid = X_valid.drop(columns=object_cols)
 
-# преобразование колонок со строчками во что-то другое
-label_X_train = X_train.copy()
-label_X_valid = X_valid.copy()
-ordinal_encoder = OrdinalEncoder()
-label_X_train[object_cols] = ordinal_encoder.fit_transform(X_train[object_cols])
-label_X_valid[object_cols] = ordinal_encoder.transform(X_valid[object_cols])
-
-# вствка среднего значения по колонке в места где Nan
-numeric_imputer = SimpleImputer(strategy='mean')
-
-for col in cols_with_missing:
-    label_X_train[col + '_was_missing'] = label_X_train[col].isnull()
-    label_X_valid[col + '_was_missing'] = label_X_valid[col].isnull()
+# Объединение числовых и закодированных категориальных признаков
+OH_X_train = pd.concat([num_X_train.reset_index(drop=True), label_X_train.reset_index(drop=True)], axis=1)
+OH_X_valid = pd.concat([num_X_valid.reset_index(drop=True), label_X_valid.reset_index(drop=True)], axis=1)
 
 # Импутация пропусков в числовых данных
-imputed_X_train = pd.DataFrame(numeric_imputer.fit_transform(label_X_train.select_dtypes(include=['float64', 'int64'])), columns=label_X_train.select_dtypes(include=['float64', 'int64']).columns)
-imputed_X_valid = pd.DataFrame(numeric_imputer.transform(label_X_valid.select_dtypes(include=['float64', 'int64'])), columns=label_X_valid.select_dtypes(include=['float64', 'int64']).columns)
+numeric_imputer = SimpleImputer(strategy='mean')
+imputed_X_train = pd.DataFrame(numeric_imputer.fit_transform(OH_X_train.select_dtypes(include=['float64', 'int64'])), columns=OH_X_train.select_dtypes(include=['float64', 'int64']).columns)
+imputed_X_valid = pd.DataFrame(numeric_imputer.transform(OH_X_valid.select_dtypes(include=['float64', 'int64'])), columns=OH_X_valid.select_dtypes(include=['float64', 'int64']).columns)
 
+# Объединение импутированных данных с остальными колонками
+OH_X_train = pd.concat([imputed_X_train, OH_X_train.drop(columns=OH_X_train.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
+OH_X_valid = pd.concat([imputed_X_valid, OH_X_valid.drop(columns=OH_X_valid.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 
-# тренировка и предикт модели
+# Тренировка модели
 house_model = XGBRegressor(n_estimators=1000, n_jobs=4, learning_rate=0.05)
-house_model.fit(imputed_X_train, y_train, verbose=False)
-preds = house_model.predict(imputed_X_valid)
+house_model.fit(OH_X_train, y_train, verbose=False)
 
-answer = pd.DataFrame({'Id': X_valid.index + 1461, 'SalePrice': preds})
+# Предсказание
+preds = house_model.predict(OH_X_valid)
+
+# Сохранение результатов
+answer = pd.DataFrame({'Id': houses_data_valid.Id, 'SalePrice': preds})  # Предполагается, что Id находится в тестовом наборе данных
 answer.to_csv("sample_submission.csv", index=False)
