@@ -34,6 +34,10 @@ delete_columns = delete(X_valid)
 X_valid = X_valid.drop(columns=delete_columns)
 X_train = X_train[X_valid.columns]
 
+# колонки в которых есть Nan
+cols_with_missing = [col for col in X_train.columns
+                     if X_train[col].isnull().any()]
+
 # отбор колонок в которых лежат строчки
 s = (X_train.dtypes == "object")
 object_cols = list(s[s].index)
@@ -49,15 +53,18 @@ label_X_valid[object_cols] = ordinal_encoder.transform(X_valid[object_cols])
 # вствка среднего значения по колонке в места где Nan
 numeric_imputer = SimpleImputer(strategy='mean')
 
-# Импутация пропусков в числовых данных
-imputed_X_train = pd.DataFrame(numeric_imputer.fit_transform(X_train.select_dtypes(include=['float64', 'int64'])), columns=X_train.select_dtypes(include=['float64', 'int64']).columns)
-imputed_X_valid = pd.DataFrame(numeric_imputer.transform(X_valid.select_dtypes(include=['float64', 'int64'])), columns=X_valid.select_dtypes(include=['float64', 'int64']).columns)
+for col in cols_with_missing:
+    label_X_train[col + '_was_missing'] = label_X_train[col].isnull()
+    label_X_valid[col + '_was_missing'] = label_X_valid[col].isnull()
 
+# Импутация пропусков в числовых данных
+imputed_X_train = pd.DataFrame(numeric_imputer.fit_transform(label_X_train.select_dtypes(include=['float64', 'int64'])), columns=label_X_train.select_dtypes(include=['float64', 'int64']).columns)
+imputed_X_valid = pd.DataFrame(numeric_imputer.transform(label_X_valid.select_dtypes(include=['float64', 'int64'])), columns=label_X_valid.select_dtypes(include=['float64', 'int64']).columns)
 
 # тренировка и предикт модели
 house_model = RandomForestRegressor(n_estimators=130, random_state=0)
-house_model.fit(label_X_train, y_train)
-preds = house_model.predict(label_X_valid)
+house_model.fit(imputed_X_train, y_train)
+preds = house_model.predict(imputed_X_valid)
 
 answer = pd.DataFrame({'Id': X_valid.index + 1461, 'SalePrice': preds})
 answer.to_csv("sample_submission.csv", index=False)
