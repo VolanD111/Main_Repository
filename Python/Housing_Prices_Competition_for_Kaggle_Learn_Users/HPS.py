@@ -4,6 +4,21 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 
+def delete(df):
+    delete_columns = []
+    for index in df.columns.tolist():
+        check_str = False
+        check_nan = False
+        for value in df[index].tolist():
+            if isinstance(value, str):  # Проверка на строку
+                check_str = True
+            elif pd.isna(value):  # Проверка на NaN
+                check_nan = True
+        # Если есть строки и NaN, добавляем столбец в список для удаления
+        if check_str and check_nan:
+            delete_columns.append(index)
+    return delete_columns
+
 
 # прочитали файлы
 houses_data_train = pd.read_csv("C:\\vscode\Python\Housing_Prices_Competition_for_Kaggle_Learn_Users\\train.csv")
@@ -15,7 +30,8 @@ X_train = houses_data_train[houses_data_train.columns]
 X_valid = houses_data_valid[houses_data_valid.columns]
 
 # удаление колонок со строчками и которых есть Nan
-X_valid = X_valid.dropna(axis=1)
+delete_columns = delete(X_valid)
+X_valid = X_valid.drop(columns=delete_columns)
 X_train = X_train[X_valid.columns]
 
 # отбор колонок в которых лежат строчки
