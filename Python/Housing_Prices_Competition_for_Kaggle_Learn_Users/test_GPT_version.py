@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 from xgboost import XGBRegressor
+from sklearn.model_selection import RandomizedSearchCV
 
 # Чтение файлов
 houses_data_train = pd.read_csv("C:\\vscode\Python\Housing_Prices_Competition_for_Kaggle_Learn_Users\\train.csv")
@@ -38,13 +39,29 @@ imputed_X_valid = pd.DataFrame(numeric_imputer.transform(OH_X_valid.select_dtype
 OH_X_train = pd.concat([imputed_X_train, OH_X_train.drop(columns=OH_X_train.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 OH_X_valid = pd.concat([imputed_X_valid, OH_X_valid.drop(columns=OH_X_valid.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 
-# Тренировка модели
-house_model = XGBRegressor(n_estimators=1300, n_jobs=5, learning_rate=0.1)
-house_model.fit(OH_X_train, y_train, verbose=False)
+# Добавление синтетических признаков
+OH_X_train['TotalSF'] = OH_X_train['TotalBsmtSF'] + OH_X_train['1stFlrSF'] + OH_X_train['2ndFlrSF']
+OH_X_valid['TotalSF'] = OH_X_valid['TotalBsmtSF'] + OH_X_valid['1stFlrSF'] + OH_X_valid['2ndFlrSF']
+
+# Поиск по сетке для гиперпараметров
+param_distributions = {
+    'n_estimators': [100, 200, 500, 1000],
+    'learning_rate': [0.01, 0.05, 0.1],
+    'max_depth': [3, 5, 7],
+    'subsample': [0.6, 0.8, 1.0],
+    'colsample_bytree': [0.6, 0.8, 1.0]
+}
+
+xgb_model = XGBRegressor(n_jobs=5)
+random_search = RandomizedSearchCV(xgb_model, param_distributions, n_iter=50, scoring='neg_mean_squared_error', cv=3)
+random_search.fit(OH_X_train, y_train)
+
+# Лучшая модель
+best_model = random_search.best_estimator_
 
 # Предсказание
-preds = house_model.predict(OH_X_valid)
+preds = best_model.predict(OH_X_valid)
 
 # Сохранение результатов
-answer = pd.DataFrame({'Id': houses_data_valid.Id, 'SalePrice': preds})  # Предполагается, что Id находится в тестовом наборе данных
+answer = pd.DataFrame({'Id': houses_data_valid.Id, 'SalePrice': preds})
 answer.to_csv("sample_submission.csv", index=False)
