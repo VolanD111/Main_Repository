@@ -6,15 +6,22 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import RandomizedSearchCV
 
 
-
 # Чтение файлов
 data_titanic_train = pd.read_csv("C:\Practice-Informatics\Python\Titanic_Kaggle\\train.csv")
 data_titanic_test = pd.read_csv("C:\Practice-Informatics\Python\Titanic_Kaggle\\test.csv")
 
 # Определение целевой переменной и признаков
 y_train = data_titanic_train.Survived
+
 X_train = data_titanic_train.drop(columns='Survived')
 X_test = data_titanic_test.copy()
+X_train = X_train.drop(columns='Embarked')
+X_test = X_test.drop(columns='Embarked')
+X_train = X_train.drop(columns='Name')
+X_test = X_test.drop(columns='Name')
+X_train = X_train.drop(columns='Fare')
+X_test = X_test.drop(columns='Fare')
+
 
 # Определение категориальных признаков
 object_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
@@ -62,5 +69,5 @@ best_model = random_search.best_estimator_
 preds = best_model.predict(OH_X_valid)
 
 # Сохранение результатов
-answer = pd.DataFrame({'PassengerId': data_titanic_test.PassengerId, 'Survived': round(data_titanic_test.Survived, 0).astype(int)})
+answer = pd.DataFrame({'PassengerId': data_titanic_test.PassengerId, 'Survived': np.round(preds).astype(int)})
 answer.to_csv("Titanic.csv", index=False)
