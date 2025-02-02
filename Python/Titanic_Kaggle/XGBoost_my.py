@@ -4,6 +4,9 @@ from xgboost import XGBRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import RandomizedSearchCV
+import optuna
+
+#  0.9952424764
 
 
 # Чтение файлов
@@ -21,6 +24,9 @@ X_train = X_train.drop(columns='Name')
 X_test = X_test.drop(columns='Name')
 X_train = X_train.drop(columns='Fare')
 X_test = X_test.drop(columns='Fare')
+X_train = X_train.drop(columns='SibSp')
+X_test = X_test.drop(columns='SibSp')
+
 
 
 # Определение категориальных признаков
@@ -40,7 +46,7 @@ OH_X_train = pd.concat([num_X_train.reset_index(drop=True), label_X_train.reset_
 OH_X_test = pd.concat([num_X_test.reset_index(drop=True), label_X_test.reset_index(drop=True)], axis=1)
 
 # Импутация пропусков в числовых данных
-numeric_imputer = SimpleImputer(strategy='mean')
+numeric_imputer = SimpleImputer(strategy='median')
 imputed_X_train = pd.DataFrame(numeric_imputer.fit_transform(OH_X_train.select_dtypes(include=['float64', 'int64'])), columns=OH_X_train.select_dtypes(include=['float64', 'int64']).columns)
 imputed_X_test = pd.DataFrame(numeric_imputer.transform(OH_X_test.select_dtypes(include=['float64', 'int64'])), columns=OH_X_test.select_dtypes(include=['float64', 'int64']).columns)
 
@@ -48,24 +54,27 @@ imputed_X_test = pd.DataFrame(numeric_imputer.transform(OH_X_test.select_dtypes(
 OH_X_train = pd.concat([imputed_X_train, OH_X_train.drop(columns=OH_X_train.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 OH_X_valid = pd.concat([imputed_X_test, OH_X_test.drop(columns=OH_X_test.select_dtypes(include=['float64', 'int64']).columns)], axis=1)
 
+def objective(trial):
+    param = {
+        'objective': 'reg:squarederror',
+        'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
+        'max_depth': trial.suggest_int('max_depth', 3, 10),
+        'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3),
+        'subsample': trial.suggest_float('subsample', 0.5, 1.0),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 1.0),
+        'gamma': trial.suggest_float('gamma', 0.0, 5.0),
+    }
+    model = XGBRegressor(**param)
+    model.fit(OH_X_train, y_train)
+    return model.score(OH_X_train, y_train)
 
-# Поиск по сетке для гиперпараметров
-param_distributions = {
-    'n_estimators': [100, 200, 500, 1000],
-    'learning_rate': [0.01, 0.05, 0.1],
-    'max_depth': [3, 5, 7],
-    'subsample': [0.6, 0.8, 1.0],
-    'colsample_bytree': [0.6, 0.8, 1.0]
-}
+# Настройка и запуск оптимизации
+study = optuna.create_study(direction='maximize')
+study.optimize(objective, n_trials=100)
 
-xgb_model = XGBRegressor(n_jobs=5)
-random_search = RandomizedSearchCV(xgb_model, param_distributions, n_iter=50, scoring='neg_mean_squared_error', cv=3)
-random_search.fit(OH_X_train, y_train)
-
-# Лучшая модель
-best_model = random_search.best_estimator_
-
-# Предсказание
+# Предсказания на валидационной выборке
+best_model = XGBRegressor(**study.best_params)
+best_model.fit(OH_X_train, y_train)
 preds = best_model.predict(OH_X_valid)
 
 # Сохранение результатов
