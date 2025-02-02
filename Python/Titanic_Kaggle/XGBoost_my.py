@@ -6,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import RandomizedSearchCV
 import optuna
 
-#  0.9952424764
+#  0.94516116
 
 
 # Чтение файлов
@@ -26,7 +26,6 @@ X_train = X_train.drop(columns='Fare')
 X_test = X_test.drop(columns='Fare')
 X_train = X_train.drop(columns='SibSp')
 X_test = X_test.drop(columns='SibSp')
-
 
 
 # Определение категориальных признаков
@@ -70,7 +69,7 @@ def objective(trial):
 
 # Настройка и запуск оптимизации
 study = optuna.create_study(direction='maximize')
-study.optimize(objective, n_trials=100)
+study.optimize(objective, n_trials=300)
 
 # Предсказания на валидационной выборке
 best_model = XGBRegressor(**study.best_params)
