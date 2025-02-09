@@ -13,7 +13,7 @@
   "editor.fontLigatures": true,
   "editor.formatOnSave": true,
   "editor.linkedEditing": true,
-  "editor.renderControlCharacters": false,
+  "editor.renderControlCharacters": true,
   "editor.unicodeHighlight.ambiguousCharacters": false,
   "editor.quickSuggestionsDelay": 0,
   "editor.bracketPairColorization.independentColorPoolPerBracketType": false,
@@ -29,7 +29,8 @@
   "prettier.tabWidth": 4,
   "files.associations": {
     "iostream": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "cmath": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
