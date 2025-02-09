@@ -10,6 +10,7 @@
   "editor.cursorStyle": "line-thin",
   "editor.cursorSmoothCaretAnimation": "explicit",
   "editor.fontFamily": "JetBrains Mono",
+  "editor.fontLigatures": true,
   "editor.formatOnSave": true,
   "editor.linkedEditing": true,
   "editor.renderControlCharacters": false,
