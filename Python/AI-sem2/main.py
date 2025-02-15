@@ -1,30 +1,12 @@
-import math
+import numpy as np
 
-def calculator(x, y, operation):
-    if operation == '+':
-        return x + y
-    elif operation == '-':
-        return x - y
-    elif operation == '*':
-        return x * y
-    elif operation == '/':
-        if y == 0:
-            return 'Делить на 0 нельзя'
-        return x / y
-    elif operation == 'exp':
-        return math.exp(x + y)
-    elif operation == 'sin':
-        return math.sin(x + y)
-    elif operation == 'cos':
-        return math.cos(x + y)
-    elif operation == 'pow':
-        return x ** y
-    else:
-        return 'Такой операции нет'
-
-x = float(input('Введите x: '))
-y = float(input('Введите y: '))
-operation = input('Введите операцию (+, -, *, /, exp, sin, cos, pow): ')
-
-result = calculator(x, y, operation)
-print("Результат:", result)
+answer = np.arange(25).reshape(5,5)
+for i in range(len(answer)):
+    for j in range(len(answer[i])):
+        if i == 0 or i == len(answer):
+            answer[i][j] = 1
+        elif j == 0 or j == len(answer[i]):
+            answer[i][j] = 1
+        else:
+            answer[i][j] = 0
+print(answer)
