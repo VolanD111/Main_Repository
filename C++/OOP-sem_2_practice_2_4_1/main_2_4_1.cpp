@@ -15,7 +15,7 @@ int main()
     cout.width(15);
     cout.setf(ios::left);
     cout << obj.get_name() << " " << obj.size << endl;
-    cin >> line;
+    getline(cin, line);
     istringstream stream(line);
     while (stream >> word)
     {
@@ -32,9 +32,9 @@ int main()
     newClass_2_4_1 obj_2(name, size);
     cout.width(15);
     cout.setf(ios::left);
-    cout << obj.get_name() << " " << obj.size << endl;
-    cin >> line;
+    cout << obj_2.get_name() << " " << obj_2.size << endl;
     words.clear();
+    getline(cin, line);
     istringstream stream2(line);
     while (stream2 >> word)
     {
@@ -47,14 +47,13 @@ int main()
             break;
         }
     }
-    int a, b;
-    for (int i = 0; i < obj.get_size(); i++)
+    int a = 1, b = 1;
+    while (a != 0 || b != 0)
     {
+        cout.width(15);
+        cout.setf(ios::right);
+        cout << a << "\t" << b << endl;
         a = obj.remove();
         b = obj_2.remove();
-        if (a != 0 && b != 0)
-        {
-            cout << a << "\t" << b << endl;
-        }
     }
 }
