@@ -1,28 +1,28 @@
 {
   "configurations": [
     {
-        "name": "Run Python",
-        "type": "python",
-        "request": "launch",
-        "program": "${file}",
-        "console": "integratedTerminal"
+      "name": "Run Python",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
     },
     {
-        "name": "Run Java",
-        "type": "java",
-        "request": "launch",
-        "mainClass": "${file}"
+      "name": "Run Java",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "${file}"
     },
     {
-        "name": "Run C++",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}",
-        "environment": [],
-        "console": "integratedTerminal"
+      "name": "Run C++",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "integratedTerminal"
     },
     {
       "name": "C/C++: g++.exe build and debug active file",
@@ -119,8 +119,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": ".",
-      "program": "build/Release/outRelease",
+      "cwd": "c:/vscode/C++/OOP-sem_2_practice_2_4_1",
+      "program": "c:/vscode/C++/OOP-sem_2_practice_2_4_1/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
