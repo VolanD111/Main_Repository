@@ -5,55 +5,52 @@
 #include <sstream>
 using namespace std;
 
+void func_1(string line, newClass_2_4_1 &obj)
+{
+    istringstream stream(line);
+    int num;
+    while (stream >> num) // Читаем числа из строки
+    {
+        if (num == 0 || obj.add(num) == false) // Если число 0 или не удалось добавить — выход
+        {
+            break;
+        }
+    }
+}
+
 int main()
 {
-    int size;
-    vector<string> words;
-    string name, line, word;
+ int size;
+    string name, line;
+
+    // ПЕРВЫЙ СТЕК
     cin >> name >> size;
     newClass_2_4_1 obj(name, size);
     cout.width(15);
     cout.setf(ios::left);
-    cout << obj.get_name() << " " << obj.size << endl;
+    cout << obj.get_name() << " " << obj.get_size() << endl;
+    cin.ignore();
     getline(cin, line);
-    istringstream stream(line);
-    while (stream >> word)
-    {
-        words.push_back(word);
-    }
-    for (int i = 0; i < words.size(); i++)
-    {
-        if (obj.add(stoi(words[i])) == false || stoi(words[i]) == 0)
-        {
-            break;
-        }
-    }
+    func_1(line, obj);
+
+    // ВТОРОЙ СТЕК
     cin >> name >> size;
     newClass_2_4_1 obj_2(name, size);
     cout.width(15);
     cout.setf(ios::left);
-    cout << obj_2.get_name() << " " << obj_2.size << endl;
-    words.clear();
+    cout << obj_2.get_name() << " " << obj_2.get_size() << endl;
+    cin.ignore();
     getline(cin, line);
-    istringstream stream2(line);
-    while (stream2 >> word)
-    {
-        words.push_back(word);
-    }
-    for (int i = 0; i < words.size(); i++)
-    {
-        if (obj_2.add(stoi(words[i])) == false || stoi(words[i]) == 0)
-        {
-            break;
-        }
-    }
-    int a = 1, b = 1;
-    while (a != 0 || b != 0)
+    func_1(line, obj_2);
+
+    cout << obj.get_name() << "\t" << obj_2.get_name() << endl;
+
+    // СРАВНЕНИЕ СТЕКОВ
+    while (obj.get_size() != 0 && obj_2.get_size() != 0)
     {
         cout.width(15);
         cout.setf(ios::right);
-        cout << a << "\t" << b << endl;
-        a = obj.remove();
-        b = obj_2.remove();
+        cout << obj.remove() << "\t" << "[" << obj_2.remove() << "]" << endl;
     }
+    return 0;
 }
