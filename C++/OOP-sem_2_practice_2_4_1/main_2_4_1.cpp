@@ -1,56 +1,62 @@
 #include "newClass_2_4_1.cpp"
 #include <iostream>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
-#include <sstream>
+
 using namespace std;
 
-void func_1(string line, newClass_2_4_1 &obj)
-{
+void func_1(string line, newClass_2_4_1 &obj) {
     istringstream stream(line);
     int num;
-    while (stream >> num) // Читаем числа из строки
-    {
-        if (num == 0 || obj.add(num) == false) // Если число 0 или не удалось добавить — выход
-        {
+    while (stream >> num) {
+        if (num == 0 || obj.add(num) == false) {
             break;
         }
     }
 }
 
-int main()
-{
- int size;
+int main() {
+    int size;
     string name, line;
 
-    // ПЕРВЫЙ СТЕК
+    // 1 СТЕК
     cin >> name >> size;
     newClass_2_4_1 obj(name, size);
-    cout.width(15);
     cout.setf(ios::left);
-    cout << obj.get_name() << " " << obj.get_size() << endl;
+    cout << obj.get_name() << " " << obj.size << endl;
     cin.ignore();
     getline(cin, line);
     func_1(line, obj);
 
-    // ВТОРОЙ СТЕК
+    // 2 СТЕК
     cin >> name >> size;
     newClass_2_4_1 obj_2(name, size);
-    cout.width(15);
     cout.setf(ios::left);
-    cout << obj_2.get_name() << " " << obj_2.get_size() << endl;
+    cout << obj_2.get_name() << " " << obj_2.size << endl;
     cin.ignore();
     getline(cin, line);
     func_1(line, obj_2);
 
-    cout << obj.get_name() << "\t" << obj_2.get_name() << endl;
+    cout.width(15);
+    cout << obj.get_name();
+    cout.width(15);
+    cout << obj_2.get_name() << endl;
+    ;
 
-    // СРАВНЕНИЕ СТЕКОВ
-    while (obj.get_size() != 0 && obj_2.get_size() != 0)
-    {
+    while (obj.get_size() != 0) {
         cout.width(15);
         cout.setf(ios::right);
-        cout << obj.remove() << "\t" << "[" << obj_2.remove() << "]" << endl;
+        cout << obj.remove();
+        if (obj_2.get_size() != 0) {
+            cout.width(15);
+            cout.setf(ios::right);
+            cout << obj_2.remove() << endl;
+            continue;
+        }
+        break;
     }
     return 0;
 }
